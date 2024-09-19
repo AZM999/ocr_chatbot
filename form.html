@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <Title> File upload utility</Title>
+    </head>
+
+    <body>
+        <h2>
+            Fiel upload test here
+        </h2>
+        <form action="http://127.0.0.1:8000/upload" method="post" enctype="multipart/form-data">
+            <label for="file"> choosen file will be uploaded on the server: </label>
+            <input type="file" id="file" name="file" accept=".pdf, .jpg, .png, .jpeg">
+
+            <br> <br>
+
+            <input type="submit" value="upload">
+        </form>
+    </body>
+</html>
