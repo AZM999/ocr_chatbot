@@ -3,8 +3,8 @@
 
 import os
 from fastapi import FastAPI, UploadFile, File, HTTPException, Request
-from ocr import extract
-from qa_model import qa_model
+from backend.ocr import extract
+from backend.qa_model import qa_model
 
 app = FastAPI()   # fastapi instance
 
