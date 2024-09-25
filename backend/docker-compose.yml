@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: bot_backend_db
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - fastapiappnetwork
+
+  app:
+    image: bot_backend
+    container_name: bot_backend_app
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/backend
+    depends_on:
+      - db
+    networks:
+      - fastapiappnetwork
+    environment:
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_HOST=$POSTGRES_HOST
+      - POSTGRES_PORT=$POSTGRES_PORT
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+
+networks:
+  fastapiappnetwork:
