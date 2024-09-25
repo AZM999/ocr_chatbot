@@ -3,7 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 from langchain_community.vectorstores import FAISS, Chroma
 from langchain_community.llms import CTransformers, huggingface_hub 
-from langchain_huggingface import HuggingFaceEndpoint
+
 from langchain.llms import huggingface_hub
 from langchain.chains import RetrievalQA, conversational_retrieval
 from langchain.prompts import PromptTemplate, ChatPromptTemplate
@@ -29,7 +29,7 @@ class qa_model:
     def load_llm(self) -> CTransformers:
         # Load the locally downloaded model here
         self.llm = CTransformers(
-            model = "/home/azm/projects/ocr_chatbot/Mistral-7B-Instruct-v0.2-Q5_K_M.gguf",
+            model = "Mistral-7B-Instruct-v0.2-Q5_K_M.gguf",
             model_type="mistral",
             max_new_tokens = 1048,
             temperature = 0.3

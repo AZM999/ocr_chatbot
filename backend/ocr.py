@@ -2,7 +2,7 @@ from PIL import Image
 import pytesseract
 
 
-#file = "/home/azm/projects/ocr_chatbot/uploaded_files/New Image.jpg"
+#file = "/home/azm/projects/ocr_chatbot/backend/uploaded_files/New Image.jpg"
 
 def extract(file: str):
     image = Image.open(file)
@@ -10,4 +10,5 @@ def extract(file: str):
     #print (text)
     return text
       
+#extract (file)
 

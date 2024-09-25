@@ -1,4 +1,4 @@
-from backend.qa_model import qa_model
+from qa_model import qa_model
 
 # test
 llm = qa_model()

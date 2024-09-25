@@ -1,3 +1,4 @@
 envfs
 __pycache__ 
 *Mistral-7B-Instruct-v0.2-Q5_K_M.gguf
+backend/.env 

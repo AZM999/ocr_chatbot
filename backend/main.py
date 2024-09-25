@@ -2,19 +2,76 @@
 # 18/09/2024
 
 import os
-from fastapi import FastAPI, UploadFile, File, HTTPException, Request
-from backend.ocr import extract
-from backend.qa_model import qa_model
+from fastapi import ( FastAPI, UploadFile, File, 
+                     HTTPException, Request,
+                     Body, Depends, status)
+from sqlalchemy.orm import Session
+from typing import Dict
+
+from ocr import extract
+from qa_model import qa_model
+from db_intitializer import get_db
+from models import users as user_model
+from schemas.users import CreateUserSchema, UserSchema, UserLoginSchema
+from services.db import users as user_db_services
+
+#import auth
 
 app = FastAPI()   # fastapi instance
+#app.include_router(auth.router)
 
 
 # main page, for testing
 @app.get("/")
 def all_files(request: Request):
     # returns all the uploaded files
-    path = f"/home/azm/projects/ocr_chatbot/uploaded_files"
+    path = f"uploaded_files/"
     return {"files" : os.listdir(path)}
+
+
+@app.post('/login', response_model=Dict)
+def login(
+        payload: UserLoginSchema = Body(),
+        session: Session = Depends(get_db)
+    ):
+    """Processes user's authentication and returns a token
+    on successful authentication.
+
+    request body:
+
+    - username: Unique identifier for a user e.g email, 
+                phone number, name
+
+    - password:
+    """
+    try:
+        user:user_model.User = user_db_services.get_user(
+            session=session, email=payload.email
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user credentials"
+        )
+
+    is_validated:bool = user.validate_password(payload.password)
+    if not is_validated:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user credentials"
+        )
+
+    return user.generate_token()
+
+
+@app.post('/signup', response_model=UserSchema)
+def signup(
+    payload: CreateUserSchema = Body(), 
+    session:Session=Depends(get_db)
+):
+    """Processes request to register user account."""
+    payload.hashed_password = user_model.User.hash_password(payload.hashed_password)
+    return user_db_services.create_user(session, user=payload)
 
 #initialize the qa_class
 qa_llm = qa_model()
@@ -27,7 +84,7 @@ async def upload(uploaded_file: UploadFile):
         raise HTTPException(status_code=400, detail="Only pdf and image(jpeg/png) files are accepted!")    
     
     try:
-        file_path = f"/home/azm/projects/ocr_chatbot/uploaded_files/{uploaded_file.filename}"
+        file_path = f"uploaded_files/{uploaded_file.filename}"
         with open(file_path, "wb") as f:
             f.write(uploaded_file.file.read())
         extracted_text = extract(file_path)
