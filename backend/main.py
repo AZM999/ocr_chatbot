@@ -5,6 +5,7 @@ import os
 from fastapi import ( FastAPI, UploadFile, File, 
                      HTTPException, Request,
                      Body, Depends, status)
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import Dict
 
@@ -18,6 +19,7 @@ from services.db import users as user_db_services
 #import auth
 
 app = FastAPI()   # fastapi instance
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 #app.include_router(auth.router)
 
 
@@ -29,21 +31,21 @@ def all_files(request: Request):
     return {"files" : os.listdir(path)}
 
 
+@app.get("/profile/{id}", response_model=UserSchema)
+def profile(id:int, session:Session=Depends(get_db)):
+    """Processes request to retrieve user
+    profile by id
+    """
+    return user_db_services.get_user_by_id(session=session, id=id)
+
+
+
 @app.post('/login', response_model=Dict)
 def login(
         payload: UserLoginSchema = Body(),
         session: Session = Depends(get_db)
     ):
-    """Processes user's authentication and returns a token
-    on successful authentication.
 
-    request body:
-
-    - username: Unique identifier for a user e.g email, 
-                phone number, name
-
-    - password:
-    """
     try:
         user:user_model.User = user_db_services.get_user(
             session=session, email=payload.email

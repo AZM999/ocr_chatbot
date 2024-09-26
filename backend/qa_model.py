@@ -32,6 +32,7 @@ class qa_model:
             model = "Mistral-7B-Instruct-v0.2-Q5_K_M.gguf",
             model_type="mistral",
             max_new_tokens = 1048,
+            context_length = 512,
             temperature = 0.3
         )
         return self.llm
@@ -71,7 +72,7 @@ class qa_model:
         prompt_template = ChatPromptTemplate.from_template(self.prompt_template)
         prompt = prompt_template.format(documents=self.document, question=question)
         ans = self.Conversation_gen_chain (prompt)
-        return {"question": question, "answer" :ans['result']}
+        return ans['result']
 
 
 
